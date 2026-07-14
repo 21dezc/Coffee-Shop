@@ -13,10 +13,12 @@ import {
   TextField,
   Box,
   Chip,
+  Button,
 } from "@mui/material";
 import ProductCard, { Product } from "./components/ProductCard";
 import { cartReducer, CartItem } from "./reducers/cartReducer";
 import Cart from "./components/Cart";
+import Link from "next/link";
 
 const products: Product[] = [
   {
@@ -67,22 +69,18 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
 
-  const [cart, dispatch] = useReducer(cartReducer, []);
+  const [cart, dispatch] = useReducer(
+  cartReducer,
+  [] as CartItem[]
+  );
 
   useEffect(() => {
-    useEffect(() => {
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
-}, [cart]);
-
   const savedCart = localStorage.getItem("cart");
 
   if (savedCart) {
-    const items = JSON.parse(savedCart);
+    const items: CartItem[] = JSON.parse(savedCart);
 
-    items.forEach((item: CartItem) => {
+    items.forEach((item) => {
       for (let i = 0; i < item.quantity; i++) {
         dispatch({
           type: "ADD_TO_CART",
@@ -92,6 +90,9 @@ export default function Home() {
     });
   }
 }, []);
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    }, [cart]);
 
   const addToCart = useCallback(
   (product: Product) => {
@@ -158,12 +159,29 @@ export default function Home() {
           onAddToCart={addToCart}
        />
       </Grid>
-  ))}
-</Grid>
+    ))}
+    </Grid>
       <Cart
         cart={cart}
         dispatch={dispatch}
         />
+        <Box
+  sx={{
+    display: "flex",
+    justifyContent: "center",
+    mt: 4,
+    mb: 2,
+  }}
+  >
+  <Button
+    component={Link}
+    href="/cart"
+    variant="contained"
+    color="success"
+  >
+    View Cart
+  </Button>
+</Box>
     </Container>
   );
 }
