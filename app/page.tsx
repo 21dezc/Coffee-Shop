@@ -16,48 +16,12 @@ import Link from "next/link";
 import { useCartContext } from "./context/CartContext";
 
 const products: Product[] = [
-  {
-    id: 1,
-    name: "Cappuccino",
-    price: 65,
-    category: "Coffee",
-    image: "coffee.jpg",
-  },
-  {
-    id: 2,
-    name: "Latte",
-    price: 75,
-    category: "Coffee",
-    image: "coffee.jpg",
-  },
-  {
-    id: 3,
-    name: "Green Tea",
-    price: 60,
-    category: "Tea",
-    image: "coffee.jpg",
-  },
-  {
-    id: 4,
-    name: "Thai Tea",
-    price: 65,
-    category: "Tea",
-    image: "coffee.jpg",
-  },
-  {
-    id: 5,
-    name: "Croissant",
-    price: 55,
-    category: "Bakery",
-    image: "coffee.jpg",
-  },
-  {
-    id: 6,
-    name: "Cheesecake",
-    price: 95,
-    category: "Dessert",
-    image: "coffee.jpg",
-  },
+  { id: 1, name: "Cappuccino", price: 65, category: "Coffee", image: "cappu.jpg" },
+  { id: 2, name: "Latte", price: 75, category: "Coffee", image: "lattee.jpg" },
+  { id: 3, name: "Green Tea", price: 60, category: "Tea", image: "Gtea.jpg" },
+  { id: 4, name: "Thai Tea", price: 65, category: "Tea", image: "thaitea.jpg" },
+  { id: 5, name: "Croissant", price: 55, category: "Bakery", image: "cs.jpg" },
+  { id: 6, name: "Cheesecake", price: 95, category: "Dessert", image: "cheesecake.jpg" },
 ];
 
 export default function Home() {
