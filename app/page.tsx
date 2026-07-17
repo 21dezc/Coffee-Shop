@@ -8,12 +8,16 @@ import {
   TextField,
   Box,
   Chip,
-  Button,
+  IconButton,
+  InputAdornment,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import ProductCard, { Product } from "./components/ProductCard";
-import Cart from "./components/Cart";
-import Link from "next/link";
+import ProductOptionsDialog from "./components/ProductOptionsDialog";
+import CartDrawer from "./components/CartDrawer";
 import { useCartContext } from "./context/CartContext";
+import { CartOptions } from "./reducers/cartReducer";
 
 const products: Product[] = [
   { id: 1, name: "Cappuccino", price: 65, category: "Coffee", image: "cappu.jpg" },
@@ -24,11 +28,26 @@ const products: Product[] = [
   { id: 6, name: "Cheesecake", price: 95, category: "Dessert", image: "cheesecake.jpg" },
 ];
 
+// หมวดที่ต้องเลือกตัวเลือกก่อนเพิ่มลงตะกร้า (เครื่องดื่ม)
+const CUSTOMIZABLE_CATEGORIES = ["Coffee", "Tea"];
+
 export default function Home() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [cartOpen, setCartOpen] = useState(false);
+  const [optionsProduct, setOptionsProduct] = useState<Product | null>(null);
 
-  const { cart, dispatch, addToCart } = useCartContext();
+  const {
+    cart,
+    addToCart,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart,
+    totalPrice,
+    totalCount,
+    warning,
+    dismissWarning,
+  } = useCartContext();
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -43,8 +62,21 @@ export default function Home() {
     });
   }, [search, category]);
 
+  // กด Add to Cart: เครื่องดื่มต้องเลือกตัวเลือกก่อน ส่วนขนม/เบเกอรี่เพิ่มเข้าตะกร้าได้เลย
+  const handleAddToCart = (product: Product) => {
+    if (CUSTOMIZABLE_CATEGORIES.includes(product.category)) {
+      setOptionsProduct(product);
+    } else {
+      addToCart(product);
+    }
+  };
+
+  const handleConfirmOptions = (product: Product, options: CartOptions) => {
+    addToCart(product, options);
+  };
+
   return (
-    <Container sx={{ py: 5 }}>
+    <Container sx={{ py: 5, pb: 12 }}>
       <Typography
         variant="h3"
         sx={{
@@ -62,6 +94,21 @@ export default function Home() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         sx={{ mb: 3 }}
+        slotProps={{
+          input: {
+            endAdornment: search ? (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="ล้างช่องค้นหา"
+                  size="small"
+                  onClick={() => setSearch("")}
+                >
+                  ✕
+                </IconButton>
+              </InputAdornment>
+            ) : undefined,
+          },
+        }}
       />
 
       <Box sx={{ display: "flex", gap: 1, mb: 4, flexWrap: "wrap" }}>
@@ -84,32 +131,41 @@ export default function Home() {
       >
         <ProductCard
           product={product}
-          onAddToCart={addToCart}
+          onAddToCart={handleAddToCart}
        />
       </Grid>
     ))}
     </Grid>
-      <Cart
+
+      <ProductOptionsDialog
+        product={optionsProduct}
+        open={optionsProduct !== null}
+        onClose={() => setOptionsProduct(null)}
+        onConfirm={handleConfirmOptions}
+      />
+
+      <CartDrawer
+        open={cartOpen}
+        onOpen={() => setCartOpen(true)}
+        onClose={() => setCartOpen(false)}
         cart={cart}
-        dispatch={dispatch}
-        />
-        <Box
-  sx={{
-    display: "flex",
-    justifyContent: "center",
-    mt: 4,
-    mb: 2,
-  }}
-  >
-  <Button
-    component={Link}
-    href="/cart"
-    variant="contained"
-    color="success"
-  >
-    View Cart
-  </Button>
-</Box>
+        totalPrice={totalPrice}
+        totalCount={totalCount}
+        onIncrease={increaseQuantity}
+        onDecrease={decreaseQuantity}
+        onRemove={removeFromCart}
+      />
+
+      <Snackbar
+        open={warning !== null}
+        autoHideDuration={3000}
+        onClose={dismissWarning}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={dismissWarning} severity="warning" sx={{ width: "100%" }}>
+          {warning}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

@@ -18,7 +18,7 @@ export default function CartPage() {
 
   const totalPrice = useMemo(() => {
     return cart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + item.unitPrice * item.quantity,
       0
     );
   }, [cart]);
@@ -44,7 +44,7 @@ export default function CartPage() {
       ) : (
         <>
           {cart.map((item) => (
-            <Card key={item.id} sx={{ mb: 2 }}>
+            <Card key={item.cartItemId} sx={{ mb: 2 }}>
               <CardContent>
                 <Typography variant="h6">
                   {item.name}
@@ -54,8 +54,20 @@ export default function CartPage() {
                   Category : {item.category}
                 </Typography>
 
+                {item.options && (
+                  <Typography color="text.secondary">
+                    {[
+                      item.options.temperature,
+                      item.options.blended ? "ปั่น +15" : null,
+                      item.options.sweetness ? `หวาน ${item.options.sweetness}` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </Typography>
+                )}
+
                 <Typography>
-                  Price : ฿{item.price}
+                  Price : ฿{item.unitPrice}
                 </Typography>
 
                 <Typography>
@@ -66,7 +78,7 @@ export default function CartPage() {
                 sx={{ 
                 fontWeight : "bold"
                 }}>
-                  Subtotal : ฿{item.price * item.quantity}
+                  Subtotal : ฿{item.unitPrice * item.quantity}
                 </Typography>
               </CardContent>
             </Card>
