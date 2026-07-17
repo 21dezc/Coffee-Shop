@@ -33,13 +33,13 @@ export default function CartPage() {
         mb: 4,
         }}
         >
-        🛒 Order Summary
+        🛒 สรุปคำสั่งซื้อ
       
       </Typography>
 
       {cart.length === 0 ? (
         <Typography align="center">
-          Your cart is empty.
+          ตะกร้าสินค้าว่างเปล่า
         </Typography>
       ) : (
         <>
@@ -51,14 +51,13 @@ export default function CartPage() {
                 </Typography>
 
                 <Typography>
-                  Category : {item.category}
+                  หมวดหมู่ : {item.category}
                 </Typography>
 
                 {item.options && (
                   <Typography color="text.secondary">
                     {[
                       item.options.temperature,
-                      item.options.blended ? "ปั่น +15" : null,
                       item.options.sweetness ? `หวาน ${item.options.sweetness}` : null,
                     ]
                       .filter(Boolean)
@@ -67,18 +66,18 @@ export default function CartPage() {
                 )}
 
                 <Typography>
-                  Price : ฿{item.unitPrice}
+                  ราคา : ฿{item.unitPrice}
                 </Typography>
 
                 <Typography>
-                  Quantity : {item.quantity}
+                  จำนวน : {item.quantity}
                 </Typography>
 
                 <Typography 
                 sx={{ 
                 fontWeight : "bold"
                 }}>
-                  Subtotal : ฿{item.unitPrice * item.quantity}
+                  ยอดรวมย่อย : ฿{item.unitPrice * item.quantity}
                 </Typography>
               </CardContent>
             </Card>
@@ -110,7 +109,7 @@ export default function CartPage() {
           href="/"
           variant="contained"
         >
-          Back to Menu
+          กลับไปหน้าหลัก
         </Button>
       </Box>
     </Container>

@@ -1,11 +1,11 @@
-import { Product } from "../components/ProductCard";
+import { Product, DEFAULT_PRODUCT_PRICE } from "../components/ProductCard";
 
-export type Temperature = "ร้อน" | "เย็น";
-export type Sweetness = "0%" | "25%" | "50%" | "100%" | "125%";
+export type Temperature = "ร้อน" | "เย็น" | "ปั่น";
+export type Sweetness = "0%" | "25%" | "50%" | "75%" | "100%";
+export const BLEND_SURCHARGE = 15; // ปั่น +15
 
 export interface CartOptions {
   temperature?: Temperature;
-  blended?: boolean; // ปั่น +15
   sweetness?: Sweetness;
 }
 
@@ -20,9 +20,7 @@ export const MAX_QUANTITY_PER_ITEM = 10;
 
 export function buildCartItemId(productId: number, options?: CartOptions): string {
   if (!options) return `${productId}`;
-  return `${productId}-${options.temperature ?? ""}-${options.blended ? "blend" : ""}-${
-    options.sweetness ?? ""
-  }`;
+  return `${productId}-${options.temperature ?? ""}-${options.sweetness ?? ""}`;
 }
 
 export type CartAction =
@@ -40,7 +38,9 @@ export const cartReducer = (
     case "ADD_TO_CART": {
       const { product, options } = action.payload;
       const cartItemId = buildCartItemId(product.id, options);
-      const unitPrice = product.price + (options?.blended ? 15 : 0);
+      const basePrice = product.price ?? DEFAULT_PRODUCT_PRICE; // สินค้าที่ไม่มีราคา ใช้ราคาตั้งต้นแทน
+      const unitPrice =
+        basePrice + (options?.temperature === "ปั่น" ? BLEND_SURCHARGE : 0);
 
       const exist = state.find((item) => item.cartItemId === cartItemId);
 

@@ -90,7 +90,7 @@ export default function Home() {
 
       <TextField
         fullWidth
-        label="Search menu..."
+        label="ค้นหาเมนู..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         sx={{ mb: 3 }}

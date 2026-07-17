@@ -11,14 +11,18 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   FormControlLabel,
-  Checkbox,
   RadioGroup,
   Radio,
   Box,
   Divider,
 } from "@mui/material";
-import { Product } from "./ProductCard";
-import { CartOptions, Sweetness, Temperature } from "../reducers/cartReducer";
+import { Product, DEFAULT_PRODUCT_PRICE } from "./ProductCard";
+import {
+  BLEND_SURCHARGE,
+  CartOptions,
+  Sweetness,
+  Temperature,
+} from "../reducers/cartReducer";
 
 type ProductOptionsDialogProps = {
   product: Product | null;
@@ -27,8 +31,15 @@ type ProductOptionsDialogProps = {
   onConfirm: (product: Product, options: CartOptions) => void;
 };
 
-const SWEETNESS_LEVELS: Sweetness[] = ["0%", "25%", "50%", "100%", "125%"];
-const BLEND_PRICE = 15;
+const TEMPERATURE_OPTIONS: Temperature[] = ["ร้อน", "เย็น", "ปั่น"];
+const SWEETNESS_LEVELS: Sweetness[] = ["0%", "25%", "50%", "75%", "100%"];
+const SWEETNESS_LABELS: Record<Sweetness, string> = {
+  "0%": "ไม่หวาน 0%",
+  "25%": "หวานน้อย 25%",
+  "50%": "หวานปานกลาง 50%",
+  "75%": "หวานมาก 75%",
+  "100%": "หวานมากที่สุด 100%",
+};
 
 export default function ProductOptionsDialog({
   product,
@@ -37,18 +48,17 @@ export default function ProductOptionsDialog({
   onConfirm,
 }: ProductOptionsDialogProps) {
   const [temperature, setTemperature] = useState<Temperature>("ร้อน");
-  const [blended, setBlended] = useState(false);
   const [sweetness, setSweetness] = useState<Sweetness>("100%");
 
   if (!product) return null;
 
-  const finalPrice = product.price + (blended ? BLEND_PRICE : 0);
+  const basePrice = product.price ?? DEFAULT_PRODUCT_PRICE;
+  const finalPrice = basePrice + (temperature === "ปั่น" ? BLEND_SURCHARGE : 0);
 
   const handleConfirm = () => {
-    onConfirm(product, { temperature, blended, sweetness });
+    onConfirm(product, { temperature, sweetness });
     // รีเซ็ตค่ากลับเป็นค่าเริ่มต้นสำหรับครั้งถัดไป
     setTemperature("ร้อน");
-    setBlended(false);
     setSweetness("100%");
     onClose();
   };
@@ -70,21 +80,12 @@ export default function ProductOptionsDialog({
           onChange={(_, value) => value && setTemperature(value)}
           sx={{ mb: 2 }}
         >
-          <ToggleButton value="ร้อน">ร้อน</ToggleButton>
-          <ToggleButton value="เย็น">เย็น</ToggleButton>
+          {TEMPERATURE_OPTIONS.map((option) => (
+            <ToggleButton key={option} value={option}>
+              {option === "ปั่น" ? `ปั่น +${BLEND_SURCHARGE}` : option}
+            </ToggleButton>
+          ))}
         </ToggleButtonGroup>
-
-        <Box sx={{ mb: 2 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={blended}
-                onChange={(e) => setBlended(e.target.checked)}
-              />
-            }
-            label={`ปั่น +${BLEND_PRICE}`}
-          />
-        </Box>
 
         <Divider sx={{ mb: 2 }} />
 
@@ -100,13 +101,7 @@ export default function ProductOptionsDialog({
               key={level}
               value={level}
               control={<Radio />}
-              label={
-                level === "0%"
-                  ? "ไม่หวาน 0%"
-                  : level === "25%"
-                  ? "หวานน้อย 25%"
-                  : level
-              }
+              label={SWEETNESS_LABELS[level]}
             />
           ))}
         </RadioGroup>

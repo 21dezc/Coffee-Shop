@@ -30,7 +30,6 @@ function formatOptions(item: CartItem) {
   if (!item.options) return null;
   const parts: string[] = [];
   if (item.options.temperature) parts.push(item.options.temperature);
-  if (item.options.blended) parts.push("ปั่น");
   if (item.options.sweetness) parts.push(`หวาน ${item.options.sweetness}`);
   return parts.length ? parts.join(" · ") : null;
 }
@@ -153,7 +152,7 @@ export default function CartDrawer({
               disabled={cart.length === 0}
               onClick={onClose}
             >
-              ชำระเงิน / ไปหน้าสรุปออเดอร์
+              ชำระเงิน 
             </Button>
           </Box>
         </Box>

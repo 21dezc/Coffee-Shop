@@ -17,6 +17,8 @@ export type Product = {
   image: string;
 };
 
+export const DEFAULT_PRODUCT_PRICE = 50;
+
 type ProductCardProps = {
   product: Product;
   onAddToCart: (product: Product) => void;
